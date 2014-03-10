@@ -9,6 +9,6 @@ Instructions to set it up:
 2. Run the script by opening up the terminal and typing 'python customSort.py'
 3. If you want to check your rank, pipe output to a txt file and then search your name in the file.
    eg:
-   ' python CustomSort.py > output.txt
+   ' python customSort.py > output.txt
      1 	    // For overall rank
      2 12   // For entc rank	'
