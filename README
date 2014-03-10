@@ -6,7 +6,7 @@ Currently it is made for 3 branches, but it can be easily extended.
 
 Instructions to set it up:
 1. By default the code contains PICT's combined result(in 'out_combined.txt') which I have already made from the 2 PDFs . I have commented out the code that enables this combining of files. So if you need to run this program on other college results you should un-comment it and change _FILE_ names accordingly.
-2. Run the script by opening up the terminal and typing 'python CustomSort.py'
+2. Run the script by opening up the terminal and typing 'python customSort.py'
 3. If you want to check your rank, pipe output to a txt file and then search your name in the file.
    eg:
    ' python CustomSort.py > output.txt
