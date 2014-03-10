@@ -1,5 +1,5 @@
 import os
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from collections import Counter
 CURRENT_DIR = os.path.dirname(__file__)
 
@@ -902,7 +902,7 @@ if main_choice == 1:
             rank += 1
             for sub in i['Marks'] :
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
-
+'''
     #### MATPLOTLOB COMMIT 1.
     #### Author: xennygrimmato
 
@@ -949,7 +949,7 @@ if main_choice == 1:
     plt.show()
 
     #### END OF MATPLOTLIB COMMIT 1.
-
+'''
 
 elif main_choice == 2:
     entc_db = []
