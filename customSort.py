@@ -17,6 +17,28 @@ with open(os.path.join(CURRENT_DIR, 'out_combined.txt'), 'w') as outfile:
         with open(fname) as inFile:
             outfile.write(inFile.read())'''
 
+#### Function to find user's rank in a given database
+
+def getRank(database, filter_field):
+    print 'Enter your Roll Number: '
+    query=raw_input()
+
+    ranklist={}
+    sorted_list = reversed(sorted(database, key=lambda k: k['Marks'][filter_field]))
+    total_students = len(database)
+    rank = 1
+    try:
+        for i in sorted_list :
+            ranklist[i['RollNum']]=rank
+            rank += 1
+
+        print 'Your rank is : ' + str(ranklist[query]) + '\n'
+    except KeyError:
+        print 'You entered an invalid Roll Number.\n'
+    exit()
+
+####
+
 f = open('out_combined.txt','r')
 pdf = f.read()
 
@@ -862,17 +884,24 @@ while True :
     student_db.append(student)
 
 
-main_choice = int(raw_input(" Choose sorting criteria:\n 1. Overall Ranks(All Branches)  2. ENTC  3. IT  4. COMP\n"))
+main_choice = int(raw_input("\nChoose filtering criteria:\n 1. Overall Ranks(All Branches)\n2. ENTC\n3. IT\n4. COMP\n"))
 
 if main_choice == 1:
-    sorted_list = reversed(sorted(student_db, key=lambda k: k['Marks']['TOTAL']))
-    total_students = len(student_db)
-    rank = 1
-    for i in sorted_list :
-        print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], rank))
-        rank += 1
-        for sub in i['Marks'] :
-            print("       %12s : %s " %(sub, i['Marks'][sub]))
+    choices = '1. Find Your Rank\n2. Custom Sort'
+    print choices
+    print 'Enter your choice: '
+    initial_choice = int(raw_input())
+    if initial_choice==1:
+        getRank(student_db,'TOTAL')
+    else:
+        sorted_list = reversed(sorted(student_db, key=lambda k: k['Marks']['TOTAL']))
+        total_students = len(student_db)
+        rank = 1
+        for i in sorted_list :
+            print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], rank))
+            rank += 1
+            for sub in i['Marks'] :
+                print("       %12s : %s " %(sub, i['Marks'][sub]))
 
     #### MATPLOTLOB COMMIT 1.
     #### Author: xennygrimmato
@@ -948,14 +977,21 @@ elif main_choice == 2:
     if choice < 1 or choice > 12 :
         print "wrong choice"
     else:
-        sorted_list = reversed(sorted(entc_db, key=lambda k: k['Marks'][choiceMap[choice]]))
-        total_students = len(entc_db)
-        rank = 1
-        for i in sorted_list :
-            print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
-            rank += 1
-            for sub in i['Marks'] :
-                print("       %12s : %s " %(sub, i['Marks'][sub]))
+        choices = '1. Find Your Rank\n2. Custom Sort'
+        print choices
+        print 'Enter your choice: '
+        initial_choice = int(raw_input())
+        if initial_choice==1:
+            getRank(entc_db, choiceMap[choice])
+        else:
+            sorted_list = reversed(sorted(entc_db, key=lambda k: k['Marks'][choiceMap[choice]]))
+            total_students = len(entc_db)
+            rank = 1
+            for i in sorted_list :
+                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
+                rank += 1
+                for sub in i['Marks'] :
+                    print("       %12s : %s " %(sub, i['Marks'][sub]))
     
 
 elif main_choice == 3:
@@ -982,14 +1018,21 @@ elif main_choice == 3:
     if choice < 1 or choice > 11 :
         print "wrong choice"
     else:
-        sorted_list = reversed(sorted(it_db, key=lambda k: k['Marks'][choiceMap[choice]]))
-        total_students = len(it_db)
-        rank = 1
-        for i in sorted_list :
-            print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
-            rank += 1
-            for sub in i['Marks'] :
-                print("       %12s : %s " %(sub, i['Marks'][sub]))
+        choices = '1. Find Your Rank\n2. Custom Sort'
+        print choices
+        print 'Enter your choice: '
+        initial_choice = int(raw_input())
+        if initial_choice==1:
+            getRank(it_db, choiceMap[choice])
+        else:
+            sorted_list = reversed(sorted(it_db, key=lambda k: k['Marks'][choiceMap[choice]]))
+            total_students = len(it_db)
+            rank = 1
+            for i in sorted_list :
+                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
+                rank += 1
+                for sub in i['Marks'] :
+                    print("       %12s : %s " %(sub, i['Marks'][sub]))
     
 
 elif main_choice == 4:
@@ -1018,6 +1061,12 @@ elif main_choice == 4:
     if choice < 1 or choice > 13 :
         print "wrong choice"
     else:
+        choices = '1. Find Your Rank\n2. Custom Sort'
+        print choices
+        print 'Enter your choice: '
+        initial_choice = int(raw_input())
+        if initial_choice==1:
+            getRank(comp_db, choiceMap[choice])
         sorted_list = reversed(sorted(comp_db, key=lambda k: k['Marks'][choiceMap[choice]]))
         total_students = len(comp_db)
         rank = 1
@@ -1029,4 +1078,3 @@ elif main_choice == 4:
     
 else:
     print "Invalid Option"
-
