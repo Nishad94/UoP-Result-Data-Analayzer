@@ -1,5 +1,6 @@
 import os
 #import matplotlib.pyplot as plt
+from collections import Counter
 CURRENT_DIR = os.path.dirname(__file__)
 
 '''PDF_FILE_ItEntc = "result_itentc.pdf"
