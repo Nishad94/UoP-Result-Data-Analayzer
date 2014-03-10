@@ -872,6 +872,53 @@ if main_choice == 1:
         rank += 1
         for sub in i['Marks'] :
             print("       %12s : %s " %(sub, i['Marks'][sub]))
+    
+    #### MATPLOTLOB COMMIT 1.
+    #### Author: xennygrimmato
+
+    # This commit tries to plot the distribution of Total Scores of students for the overall result
+
+    # plt.plot ( [list_x_axis], [list_y_axis] )
+
+    len_x_axis = 751 # There exist 751 possible scores --> [0,750]
+    len_y_axis = total_students
+
+    list_x_axis=[]
+    list_y_axis=[]
+
+    for i in range(0,751):
+        list_x_axis.append(i)
+    
+    all_scores_cnt = Counter() # { score: number_of_students_with_that_score }
+
+    all_totals = []
+
+    for entry in student_db:
+        all_totals.append(int(entry['Marks']['TOTAL']))
+
+    for ith in all_totals:
+        all_scores_cnt[ith]+=1
+
+    #print all_scores_cnt
+
+    number_of_students_with_that_score = [] # Mapping index to number of students
+
+    for i in range(0,751):
+        number_of_students_with_that_score.append(all_scores_cnt[i])
+
+    temp_list = number_of_students_with_that_score
+    list_y_axis = temp_list
+
+    #print list_y_axis
+
+    plt.plot(list_x_axis, list_y_axis, 'r')
+    plt.ylabel('No. of students')
+    plt.xlabel('Marks')
+    plt.axis([0, 750, 0, 12])
+    plt.grid(True)
+    plt.show()
+
+    #### END OF MATPLOTLIB COMMIT 1.
 
 elif main_choice == 2:
     entc_db = []
