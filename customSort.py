@@ -23,7 +23,7 @@ def getRank(database, filter_field):
     print 'Enter your Roll Number: '
     query=raw_input()
 
-    ranklist={}
+    ranklist={} # Roll Number: Rank
     sorted_list = reversed(sorted(database, key=lambda k: k['Marks'][filter_field]))
     total_students = len(database)
     rank = 1
@@ -31,8 +31,10 @@ def getRank(database, filter_field):
         for i in sorted_list :
             ranklist[i['RollNum']]=rank
             rank += 1
-
-        print 'Your rank is : ' + str(ranklist[query]) + '\n'
+        print '\n---------------------------'
+        print 'Roll No: ' + str(query)
+        print 'Your rank in {0} is {1}'.format(filter_field, ranklist[query])
+        print '---------------------------'
     except KeyError:
         print 'You entered an invalid Roll Number.\n'
     exit()
@@ -884,7 +886,7 @@ while True :
     student_db.append(student)
 
 
-main_choice = int(raw_input("\nChoose filtering criteria:\n 1. Overall Ranks(All Branches)\n2. ENTC\n3. IT\n4. COMP\n"))
+main_choice = int(raw_input("\nChoose filtering criteria:\n1. Overall Ranks(All Branches)\n2. ENTC\n3. IT\n4. COMP\n"))
 
 if main_choice == 1:
     choices = '1. Find Your Rank\n2. Custom Sort'
@@ -898,59 +900,59 @@ if main_choice == 1:
         total_students = len(student_db)
         rank = 1
         for i in sorted_list :
-            print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], rank))
-            rank += 1
             for sub in i['Marks'] :
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
-'''
-    #### MATPLOTLOB COMMIT 1.
-    #### Author: xennygrimmato
+            print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], rank))
+            rank += 1
+        '''
+            #### MATPLOTLOB COMMIT 1.
+            #### Author: xennygrimmato
 
-    # This commit tries to plot the distribution of Total Scores of students for the overall result
+            # This commit tries to plot the distribution of Total Scores of students for the overall result
 
-    # plt.plot ( [list_x_axis], [list_y_axis] )
+            # plt.plot ( [list_x_axis], [list_y_axis] )
 
-    len_x_axis = 751 # There exist 751 possible scores --> [0,750]
-    len_y_axis = total_students
+            len_x_axis = 751 # There exist 751 possible scores --> [0,750]
+            len_y_axis = total_students
 
-    list_x_axis=[]
-    list_y_axis=[]
+            list_x_axis=[]
+            list_y_axis=[]
 
-    for i in range(0,751):
-        list_x_axis.append(i)
-    
-    all_scores_cnt = Counter() # { score: number_of_students_with_that_score }
+            for i in range(0,751):
+                list_x_axis.append(i)
+            
+            all_scores_cnt = Counter() # { score: number_of_students_with_that_score }
 
-    all_totals = []
+            all_totals = []
 
-    for entry in student_db:
-        all_totals.append(int(entry['Marks']['TOTAL']))
+            for entry in student_db:
+                all_totals.append(int(entry['Marks']['TOTAL']))
 
-    for ith in all_totals:
-        all_scores_cnt[ith]+=1
+            for ith in all_totals:
+                all_scores_cnt[ith]+=1
 
-    #print all_scores_cnt
+            #print all_scores_cnt
 
-    number_of_students_with_that_score = [] # Mapping index to number of students
+            number_of_students_with_that_score = [] # Mapping index to number of students
 
-    for i in range(0,751):
-        number_of_students_with_that_score.append(all_scores_cnt[i])
+            for i in range(0,751):
+                number_of_students_with_that_score.append(all_scores_cnt[i])
 
-    temp_list = number_of_students_with_that_score
-    list_y_axis = temp_list
+            temp_list = number_of_students_with_that_score
+            list_y_axis = temp_list
 
-    #print list_y_axis
+            #print list_y_axis
 
-    plt.plot(list_x_axis, list_y_axis, 'r')
-    plt.ylabel('No. of students')
-    plt.xlabel('Marks')
-    plt.axis([0, 750, 0, 12])
-    plt.grid(True)
-    plt.show()
+            plt.plot(list_x_axis, list_y_axis, 'r')
+            plt.ylabel('No. of students')
+            plt.xlabel('Marks')
+            plt.axis([0, 750, 0, 12])
+            plt.grid(True)
+            plt.show()
 
-    #### END OF MATPLOTLIB COMMIT 1.
-'''
+            #### END OF MATPLOTLIB COMMIT 1.
 
+        '''
 elif main_choice == 2:
     entc_db = []
     for entry in student_db :
