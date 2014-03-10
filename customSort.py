@@ -949,7 +949,7 @@ elif main_choice == 2:
         print "wrong choice"
     else:
         sorted_list = reversed(sorted(entc_db, key=lambda k: k['Marks'][choiceMap[choice]]))
-        total_students = len(sorted_list)
+        total_students = len(entc_db)
         rank = 1
         for i in sorted_list :
             print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
@@ -983,7 +983,7 @@ elif main_choice == 3:
         print "wrong choice"
     else:
         sorted_list = reversed(sorted(it_db, key=lambda k: k['Marks'][choiceMap[choice]]))
-        total_students = len(sorted_list)
+        total_students = len(it_db)
         rank = 1
         for i in sorted_list :
             print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
@@ -1019,7 +1019,7 @@ elif main_choice == 4:
         print "wrong choice"
     else:
         sorted_list = reversed(sorted(comp_db, key=lambda k: k['Marks'][choiceMap[choice]]))
-        total_students = len(sorted_list)
+        total_students = len(comp_db)
         rank = 1
         for i in sorted_list :
             print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
@@ -1029,3 +1029,4 @@ elif main_choice == 4:
     
 else:
     print "Invalid Option"
+
