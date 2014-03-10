@@ -1,5 +1,5 @@
 import os
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from collections import Counter
 CURRENT_DIR = os.path.dirname(__file__)
 
@@ -865,15 +865,15 @@ while True :
 main_choice = int(raw_input(" Choose sorting criteria:\n 1. Overall Ranks(All Branches)  2. ENTC  3. IT  4. COMP\n"))
 
 if main_choice == 1:
-    sorted_list = sorted(student_db, key=lambda k: k['Marks']['TOTAL'])
-    total_students = len(sorted_list)
-    rank = 0
+    sorted_list = reversed(sorted(student_db, key=lambda k: k['Marks']['TOTAL']))
+    total_students = len(student_db)
+    rank = 1
     for i in sorted_list :
-        print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'],total_students - rank))
+        print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], rank))
         rank += 1
         for sub in i['Marks'] :
             print("       %12s : %s " %(sub, i['Marks'][sub]))
-    '''
+
     #### MATPLOTLOB COMMIT 1.
     #### Author: xennygrimmato
 
@@ -920,8 +920,8 @@ if main_choice == 1:
     plt.show()
 
     #### END OF MATPLOTLIB COMMIT 1.
-    '''
-    
+
+
 elif main_choice == 2:
     entc_db = []
     for entry in student_db :
@@ -948,11 +948,11 @@ elif main_choice == 2:
     if choice < 1 or choice > 12 :
         print "wrong choice"
     else:
-        sorted_list = sorted(entc_db, key=lambda k: k['Marks'][choiceMap[choice]])
+        sorted_list = reversed(sorted(entc_db, key=lambda k: k['Marks'][choiceMap[choice]]))
         total_students = len(sorted_list)
-        rank = 0
+        rank = 1
         for i in sorted_list :
-            print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], total_students - rank))
+            print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
             rank += 1
             for sub in i['Marks'] :
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
@@ -982,11 +982,11 @@ elif main_choice == 3:
     if choice < 1 or choice > 11 :
         print "wrong choice"
     else:
-        sorted_list = sorted(it_db, key=lambda k: k['Marks'][choiceMap[choice]])
+        sorted_list = reversed(sorted(it_db, key=lambda k: k['Marks'][choiceMap[choice]]))
         total_students = len(sorted_list)
-        rank = 0
+        rank = 1
         for i in sorted_list :
-            print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], total_students - rank))
+            print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
             rank += 1
             for sub in i['Marks'] :
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
@@ -1018,15 +1018,14 @@ elif main_choice == 4:
     if choice < 1 or choice > 13 :
         print "wrong choice"
     else:
-        sorted_list = sorted(comp_db, key=lambda k: k['Marks'][choiceMap[choice]])
+        sorted_list = reversed(sorted(comp_db, key=lambda k: k['Marks'][choiceMap[choice]]))
         total_students = len(sorted_list)
-        rank = 0
+        rank = 1
         for i in sorted_list :
-            print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], total_students - rank))
+            print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
             rank += 1
             for sub in i['Marks'] :
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
     
 else:
     print "Invalid Option"
-
