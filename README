@@ -11,4 +11,4 @@ Instructions to set it up:
      
 Added feature:
 
-# To view graphic plots of score distributions, please install 'matplotlib' ( http://matplotlib.org/ ) first and then comment out Line 2 and Lines 875...922 in customSort.py
+# To view graphic plots of score distributions, please install 'matplotlib' ( http://matplotlib.org/ ) first and then comment out Line 2 and Lines 905...952 in customSort.py
