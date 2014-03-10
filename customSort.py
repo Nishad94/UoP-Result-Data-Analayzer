@@ -1,5 +1,5 @@
 import os
-
+#import matplotlib.pyplot as plt
 CURRENT_DIR = os.path.dirname(__file__)
 
 '''PDF_FILE_ItEntc = "result_itentc.pdf"
@@ -872,7 +872,7 @@ if main_choice == 1:
         rank += 1
         for sub in i['Marks'] :
             print("       %12s : %s " %(sub, i['Marks'][sub]))
-    
+    '''
     #### MATPLOTLOB COMMIT 1.
     #### Author: xennygrimmato
 
@@ -919,7 +919,8 @@ if main_choice == 1:
     plt.show()
 
     #### END OF MATPLOTLIB COMMIT 1.
-
+    '''
+    
 elif main_choice == 2:
     entc_db = []
     for entry in student_db :
