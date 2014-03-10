@@ -1067,14 +1067,16 @@ elif main_choice == 4:
         initial_choice = int(raw_input())
         if initial_choice==1:
             getRank(comp_db, choiceMap[choice])
-        sorted_list = reversed(sorted(comp_db, key=lambda k: k['Marks'][choiceMap[choice]]))
-        total_students = len(comp_db)
-        rank = 1
-        for i in sorted_list :
-            print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
-            rank += 1
-            for sub in i['Marks'] :
-                print("       %12s : %s " %(sub, i['Marks'][sub]))
+        else:
+            sorted_list = reversed(sorted(comp_db, key=lambda k: k['Marks'][choiceMap[choice]]))
+            total_students = len(comp_db)
+            rank = 1
+            for i in sorted_list :
+                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
+                rank += 1
+                for sub in i['Marks'] :
+                    print("       %12s : %s " %(sub, i['Marks'][sub]))
     
 else:
     print "Invalid Option"
+
