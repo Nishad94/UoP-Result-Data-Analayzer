@@ -12,3 +12,7 @@ Instructions to set it up:
    ' python customSort.py > output.txt
      1 	    // For overall rank
      2 12   // For entc rank	'
+     
+Added feature:
+
+# To view graphic plots of score distributions, please install 'matplotlib' ( http://matplotlib.org/ ) first and then comment out Line 2 and Lines 875...922 in customSort.py
