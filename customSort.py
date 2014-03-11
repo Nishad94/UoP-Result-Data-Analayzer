@@ -40,6 +40,7 @@ def getRank(database, filter_field):
             if student['Name'].find(query) != -1 :
                 ch = int(raw_input('Did you mean \'' + student['Name'] + '\' ?\n 1. Yes  2. No : '))
                 if(ch == 1):
+                    student_record = student
                     NAME = student['Name']
                     match_found = True
                     break
@@ -55,6 +56,8 @@ def getRank(database, filter_field):
             print '\n---------------------------'
             print 'Roll No: ' + ranklist[NAME][1] + '    ' + NAME
             print 'Your rank in {0} is {1}'.format(filter_field, ranklist[NAME][0])
+            for field in student_record['Marks'] :
+                print("       %12s : %s " %(field, student_record['Marks'][field]))
             print '---------------------------'
         except KeyError:
             print 'You entered an invalid name.\n'               
@@ -68,10 +71,14 @@ def getRank(database, filter_field):
         try:
             for student in sorted_list :
                 ranklist[student['RollNum']] = (rank, student['Name'])
+                if student['RollNum'] == query:
+                    student_record = student
                 rank += 1
             print '\n---------------------------'
             print 'Roll No: ' + str(query) + '    ' + ranklist[query][1]
             print 'Your rank in {0} is {1}'.format(filter_field, ranklist[query][0])
+            for field in student_record['Marks'] :
+                print("       %12s : %s " %(field, student_record['Marks'][field]))
             print '---------------------------'
         except KeyError:
             print 'You entered an invalid Roll Number.\n'
@@ -621,7 +628,7 @@ while True :
         i += 1
     if marks == 'AA':
         marks = '0'
-    Marks['PL_PRAC'] = int(marks)
+    Marks['PL_TW'] = int(marks)
 
     #PL Prac
     subCode_start = student_data.find(PL, i)
@@ -641,7 +648,7 @@ while True :
         i += 1
     if marks == 'AA':
         marks = '0'
-    Marks['PL_TW'] = int(marks)
+    Marks['PL_PRAC'] = int(marks)
 
     #Communication TW
     subCode_start = student_data.find(CLL, i)
@@ -1040,7 +1047,7 @@ elif main_choice == 3:
         if entry['Branch'] == "IT" :
             it_db.append(entry)
 
-    choice = int(raw_input(" Choose sorting criteria: \n 1. DS  2. FDS  3. CO  4. DELD  5. PSOOP  6.PL Prac  7.PL TW  8. DELD Prac  9. DELD Oral 10. Overall Score\n"))
+    choice = int(raw_input(" Choose sorting criteria: \n 1. DS  2. FDS  3. CO  4. DELD  5. PSOOP  6.PL Prac  7.PL TW  8. DELD Prac  9. DELD Oral 10. CLL 11. Overall Score\n"))
 
     choiceMap = { 
         1 : 'DS',
@@ -1052,7 +1059,8 @@ elif main_choice == 3:
         7 : 'PL_TW',
         8 : 'DELD_PRAC',
         9 : 'DELD_ORAL',
-        10 : 'TOTAL'
+        10 : 'CLL',
+        11 : 'TOTAL'
     }
 
     if choice < 1 or choice > 11 :
@@ -1125,6 +1133,7 @@ elif main_choice == 4:
                     plotGraph(750,12,comp_db,'TOTAL')
                 else:
                     plotGraph(100,20,comp_db,choiceMap[choice])
+    
 else:
     print "Invalid Option"
 
