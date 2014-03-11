@@ -1,5 +1,5 @@
 import os
-#import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from collections import Counter
 CURRENT_DIR = os.path.dirname(__file__)
 
@@ -889,7 +889,7 @@ while True :
 main_choice = int(raw_input("\nChoose filtering criteria:\n1. Overall Ranks(All Branches)\n2. ENTC\n3. IT\n4. COMP\n"))
 
 if main_choice == 1:
-    choices = '1. Find Your Rank\n2. Custom Sort'
+    choices = '1. Find Your Rank\n2. View everyone\'s rank'
     print choices
     print 'Enter your choice: '
     initial_choice = int(raw_input())
@@ -904,55 +904,54 @@ if main_choice == 1:
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
             print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], rank))
             rank += 1
-        '''
-            #### MATPLOTLOB COMMIT 1.
+
+        ''' #### MATPLOTLOB COMMIT 1
             #### Author: xennygrimmato
 
             # This commit tries to plot the distribution of Total Scores of students for the overall result
 
             # plt.plot ( [list_x_axis], [list_y_axis] )
 
-            len_x_axis = 751 # There exist 751 possible scores --> [0,750]
-            len_y_axis = total_students
+        len_x_axis = 751 # There exist 751 possible scores --> [0,750]
+        len_y_axis = total_students
 
-            list_x_axis=[]
-            list_y_axis=[]
+        list_x_axis=[]
+        list_y_axis=[]
 
-            for i in range(0,751):
-                list_x_axis.append(i)
+        for i in range(0,751):
+            list_x_axis.append(i)
             
-            all_scores_cnt = Counter() # { score: number_of_students_with_that_score }
+        all_scores_cnt = Counter() # { score: number_of_students_with_that_score }
 
-            all_totals = []
+        all_totals = []
 
-            for entry in student_db:
-                all_totals.append(int(entry['Marks']['TOTAL']))
+        for entry in student_db:
+            all_totals.append(int(entry['Marks']['TOTAL']))
 
-            for ith in all_totals:
-                all_scores_cnt[ith]+=1
+        for ith in all_totals:
+            all_scores_cnt[ith]+=1
 
             #print all_scores_cnt
 
-            number_of_students_with_that_score = [] # Mapping index to number of students
+        number_of_students_with_that_score = [] # Mapping index to number of students
 
-            for i in range(0,751):
-                number_of_students_with_that_score.append(all_scores_cnt[i])
+        for i in range(0,751):
+            number_of_students_with_that_score.append(all_scores_cnt[i])
 
-            temp_list = number_of_students_with_that_score
-            list_y_axis = temp_list
+        temp_list = number_of_students_with_that_score
+        list_y_axis = temp_list
 
             #print list_y_axis
 
-            plt.plot(list_x_axis, list_y_axis, 'r')
-            plt.ylabel('No. of students')
-            plt.xlabel('Marks')
-            plt.axis([0, 750, 0, 12])
-            plt.grid(True)
-            plt.show()
+        plt.plot(list_x_axis, list_y_axis, 'r')
+        plt.ylabel('No. of students')
+        plt.xlabel('Marks')
+        plt.axis([0, 750, 0, 12])
+        plt.grid(True)
+        plt.show()
+        
+        #### END OF MATPLOTLIB COMMIT 1. '''  
 
-            #### END OF MATPLOTLIB COMMIT 1.
-
-        '''
 elif main_choice == 2:
     entc_db = []
     for entry in student_db :
@@ -979,7 +978,7 @@ elif main_choice == 2:
     if choice < 1 or choice > 12 :
         print "wrong choice"
     else:
-        choices = '1. Find Your Rank\n2. Custom Sort'
+        choices = '1. Find Your Rank\n2. View everyone\'s rank'
         print choices
         print 'Enter your choice: '
         initial_choice = int(raw_input())
@@ -1020,7 +1019,7 @@ elif main_choice == 3:
     if choice < 1 or choice > 11 :
         print "wrong choice"
     else:
-        choices = '1. Find Your Rank\n2. Custom Sort'
+        choices = '1. Find Your Rank\n2.  View everyone\'s rank'
         print choices
         print 'Enter your choice: '
         initial_choice = int(raw_input())
@@ -1063,7 +1062,7 @@ elif main_choice == 4:
     if choice < 1 or choice > 13 :
         print "wrong choice"
     else:
-        choices = '1. Find Your Rank\n2. Custom Sort'
+        choices = '1. Find Your Rank\n2. View everyone\'s rank'
         print choices
         print 'Enter your choice: '
         initial_choice = int(raw_input())
