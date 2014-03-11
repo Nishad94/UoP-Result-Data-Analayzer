@@ -1035,9 +1035,9 @@ if main_choice == 1:
         total_students = len(student_db)
         rank = 0
         for i in sorted_list :
+            print(" %s %25s   %4s    Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['College'], i['Branch'], total_students-rank))
             for sub in i['Marks'] :
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
-            print(" %s %25s   %4s    Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['College'], i['Branch'], total_students-rank))
             rank += 1
         if(MATH_PLOT == True):
             plotGraph(750, 11, student_db, 'TOTAL', 'UoP Sem 3[Comp + IT + Entc]')
