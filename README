@@ -2,6 +2,7 @@ Nishad94 / UoP-Result-Data-Analayzer
 
 This is a python program that helps analyze various statistics from the UoP's result PDFs. It enables sorting based on overall score to find the combined ranks of 3 branches(Computer Engineering, IT, ENTC) as well as sorting based on individual branches, and even individual subjects. 
 The user can also check his rank in the College for a given subject.
+Graph plotting has also been added(by xennygrimmato) to the program thus giving a visual representation for the statistics.
 
 Currently it is made for 3 branches, but it can be easily extended.
 
