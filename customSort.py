@@ -896,13 +896,13 @@ if main_choice == 1:
     if initial_choice==1:
         getRank(student_db,'TOTAL')
     else:
-        sorted_list = reversed(sorted(student_db, key=lambda k: k['Marks']['TOTAL']))
+        sorted_list = sorted(student_db, key=lambda k: k['Marks']['TOTAL'])
         total_students = len(student_db)
-        rank = 1
+        rank = 0
         for i in sorted_list :
             for sub in i['Marks'] :
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
-            print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], rank))
+            print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], total_students-rank))
             rank += 1
 
         ''' #### MATPLOTLOB COMMIT 1
@@ -985,11 +985,11 @@ elif main_choice == 2:
         if initial_choice==1:
             getRank(entc_db, choiceMap[choice])
         else:
-            sorted_list = reversed(sorted(entc_db, key=lambda k: k['Marks'][choiceMap[choice]]))
+            sorted_list = sorted(entc_db, key=lambda k: k['Marks'][choiceMap[choice]])
             total_students = len(entc_db)
-            rank = 1
+            rank = 0
             for i in sorted_list :
-                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
+                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], total_students-rank))
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
@@ -1026,11 +1026,11 @@ elif main_choice == 3:
         if initial_choice==1:
             getRank(it_db, choiceMap[choice])
         else:
-            sorted_list = reversed(sorted(it_db, key=lambda k: k['Marks'][choiceMap[choice]]))
+            sorted_list = sorted(it_db, key=lambda k: k['Marks'][choiceMap[choice]])
             total_students = len(it_db)
-            rank = 1
+            rank = 0
             for i in sorted_list :
-                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
+                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], total_students-rank))
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
@@ -1069,11 +1069,11 @@ elif main_choice == 4:
         if initial_choice==1:
             getRank(comp_db, choiceMap[choice])
         else:
-            sorted_list = reversed(sorted(comp_db, key=lambda k: k['Marks'][choiceMap[choice]]))
+            sorted_list = sorted(comp_db, key=lambda k: k['Marks'][choiceMap[choice]])
             total_students = len(comp_db)
-            rank = 1
+            rank = 0
             for i in sorted_list :
-                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], rank))
+                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], total_students-rank))
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
