@@ -1,6 +1,7 @@
 import os
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from collections import Counter
+
 CURRENT_DIR = os.path.dirname(__file__)
 
 '''PDF_FILE_ItEntc = "result_itentc.pdf"
@@ -20,26 +21,97 @@ with open(os.path.join(CURRENT_DIR, 'out_combined.txt'), 'w') as outfile:
 #### Function to find user's rank in a given database
 
 def getRank(database, filter_field):
-    print 'Enter your Roll Number: '
-    query=raw_input()
-
-    ranklist={} # Roll Number: Rank
-    sorted_list = reversed(sorted(database, key=lambda k: k['Marks'][filter_field]))
-    total_students = len(database)
-    rank = 1
-    try:
-        for i in sorted_list :
-            ranklist[i['RollNum']]=rank
-            rank += 1
-        print '\n---------------------------'
-        print 'Roll No: ' + str(query)
-        print 'Your rank in {0} is {1}'.format(filter_field, ranklist[query])
-        print '---------------------------'
-    except KeyError:
-        print 'You entered an invalid Roll Number.\n'
+    choice=int(raw_input("1. Find by name  2. Find by roll number : "))
+    if choice == 1 :
+        query = raw_input("Enter name : ")
+        query = query.upper()
+        # changed from reversed(), it returns a reverse iterator which can be traversed only once! Avoid using that!
+        sorted_list = sorted(database, key = lambda k : k['Marks'][filter_field], reverse=True)
+        match_found = False
+        ranklist = {}
+ 
+        for student in sorted_list:
+            if student['Name'].find(query) != -1 :
+                ch = int(raw_input('Did you mean \'' + student['Name'] + '\' ?\n 1. Yes  2. No : '))
+                if(ch == 1):
+                    NAME = student['Name']
+                    match_found = True
+                    break
+        if match_found == False:
+            print 'No match found!'
+            exit()
+        total_students = len(database)
+        rank = 1
+        try:
+            for student in sorted_list :
+                ranklist[student['Name']] = (rank, student['RollNum'])
+                rank += 1
+            print '\n---------------------------'
+            print 'Roll No: ' + ranklist[NAME][1] + '    ' + NAME
+            print 'Your rank in {0} is {1}'.format(filter_field, ranklist[NAME][0])
+            print '---------------------------'
+        except KeyError:
+            print 'You entered an invalid name.\n'               
+        
+    elif choice == 2 :
+        query = raw_input("Enter roll number: ")
+        ranklist={}
+        sorted_list = sorted(database, key=lambda k: k['Marks'][filter_field], reverse=True)
+        total_students = len(database)
+        rank = 1
+        try:
+            for student in sorted_list :
+                ranklist[student['RollNum']] = (rank, student['Name'])
+                rank += 1
+            print '\n---------------------------'
+            print 'Roll No: ' + str(query) + '    ' + ranklist[query][1]
+            print 'Your rank in {0} is {1}'.format(filter_field, ranklist[query][0])
+            print '---------------------------'
+        except KeyError:
+            print 'You entered an invalid Roll Number.\n'
+    else:
+        print 'Invalid choice!'
     exit()
 
 ####
+
+### Generalized graph plotting function
+def plotGraph(xRange, yRange, student_db, subField):
+    xRange += 1
+    len_x_axis = xRange
+    len_y_axis = yRange
+
+    list_x_axis=[]
+    list_y_axis=[]
+
+    for i in range(len_x_axis):
+        list_x_axis.append(i)
+
+    all_scores_cnt = Counter() # { score: number_of_students_with_that_score }
+
+    all_totals = []
+
+    for student in student_db:
+        marks = int(student['Marks'][subField])
+        all_scores_cnt[marks] += 1
+
+    number_of_students_with_that_score = [] # Mapping index to number of students
+
+    for i in range(xRange):
+        number_of_students_with_that_score.append(all_scores_cnt[i])
+
+    list_y_axis = number_of_students_with_that_score
+    
+    plt.plot(list_x_axis, list_y_axis, 'r')
+    plt.ylabel('No. of students')
+    plt.xlabel('Marks')
+    plt.axis([0, xRange, 0, yRange])
+    plt.grid(True)
+    plt.show()
+
+    #### END OF MATPLOTLIB Function
+
+
 
 f = open('out_combined.txt','r')
 pdf = f.read()
@@ -904,53 +976,8 @@ if main_choice == 1:
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
             print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], total_students-rank))
             rank += 1
+        plotGraph(750, 12, student_db, 'TOTAL')
 
-        ''' #### MATPLOTLOB COMMIT 1
-            #### Author: xennygrimmato
-
-            # This commit tries to plot the distribution of Total Scores of students for the overall result
-
-            # plt.plot ( [list_x_axis], [list_y_axis] )
-
-        len_x_axis = 751 # There exist 751 possible scores --> [0,750]
-        len_y_axis = total_students
-
-        list_x_axis=[]
-        list_y_axis=[]
-
-        for i in range(0,751):
-            list_x_axis.append(i)
-            
-        all_scores_cnt = Counter() # { score: number_of_students_with_that_score }
-
-        all_totals = []
-
-        for entry in student_db:
-            all_totals.append(int(entry['Marks']['TOTAL']))
-
-        for ith in all_totals:
-            all_scores_cnt[ith]+=1
-
-            #print all_scores_cnt
-
-        number_of_students_with_that_score = [] # Mapping index to number of students
-
-        for i in range(0,751):
-            number_of_students_with_that_score.append(all_scores_cnt[i])
-
-        temp_list = number_of_students_with_that_score
-        list_y_axis = temp_list
-
-            #print list_y_axis
-
-        plt.plot(list_x_axis, list_y_axis, 'r')
-        plt.ylabel('No. of students')
-        plt.xlabel('Marks')
-        plt.axis([0, 750, 0, 12])
-        plt.grid(True)
-        plt.show()
-        
-        #### END OF MATPLOTLIB COMMIT 1. '''  
 
 elif main_choice == 2:
     entc_db = []
@@ -993,6 +1020,10 @@ elif main_choice == 2:
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
+            if choiceMap[choice] == 'TOTAL' :
+                plotGraph(750,12,entc_db,'TOTAL')
+            else:
+                plotGraph(100,20,entc_db,choiceMap[choice])    
     
 
 elif main_choice == 3:
@@ -1034,7 +1065,10 @@ elif main_choice == 3:
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
-    
+            if choiceMap[choice] == 'TOTAL' :
+                plotGraph(750,12,it_db,'TOTAL')
+            else:
+                plotGraph(100,20,it_db,choiceMap[choice])
 
 elif main_choice == 4:
     comp_db = []
@@ -1077,7 +1111,10 @@ elif main_choice == 4:
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
-    
+            if choiceMap[choice] == 'TOTAL' :
+                plotGraph(750,12,comp_db,'TOTAL')
+            else:
+                plotGraph(100,20,comp_db,choiceMap[choice])
 else:
     print "Invalid Option"
 

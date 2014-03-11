@@ -1,0 +1,16 @@
+Nishad94 / UoP-Result-Data-Analayzer
+
+This is a python program that helps analyze various statistics from the UoP's result PDFs. It enables sorting based on overall score to find the combined ranks of 3 branches(Computer Engineering, IT, ENTC) as well as sorting based on individual branches, and even individual subjects. 
+The user can also check his rank in the College for a given subject.
+Graph plotting has also been added(b to the program thus giving a visual representation for the statistics.
+
+Currently it is made for 3 branches, but it can be easily extended.
+
+Instructions to set it up:
+1. By default the code contains PICT's combined result(in 'out_combined.txt') which I have already made from the 2 PDFs . I have commented out the code that enables this combining of files. So if you need to run this program on other college results you should un-comment it and change _FILE_ names accordingly.
+2. Run the script by opening up the terminal and typing 'python customSort.py'
+     
+Added feature:
+
+# To view graphic plots of score distributions, please install 'matplotlib' ( http://matplotlib.org/ ) first and then comment out Line 2 and Lines 905...952 in customSort.py
+  Install 'matplotlib' on Ubuntu : sudo apt-get install matplotlib
