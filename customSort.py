@@ -1,5 +1,11 @@
 import os
-import matplotlib.pyplot as plt
+
+MATH_PLOT = True
+try:
+    import matplotlib.pyplot as plt
+except ImportError, e:
+    MATH_PLOT = False
+
 from collections import Counter
 
 CURRENT_DIR = os.path.dirname(__file__)
@@ -976,7 +982,8 @@ if main_choice == 1:
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
             print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], total_students-rank))
             rank += 1
-        plotGraph(750, 12, student_db, 'TOTAL')
+        if(MATH_PLOT == True):
+            plotGraph(750, 12, student_db, 'TOTAL')
 
 
 elif main_choice == 2:
@@ -1020,10 +1027,11 @@ elif main_choice == 2:
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
-            if choiceMap[choice] == 'TOTAL' :
-                plotGraph(750,12,entc_db,'TOTAL')
-            else:
-                plotGraph(100,20,entc_db,choiceMap[choice])    
+            if MATH_PLOT == True:
+                if choiceMap[choice] == 'TOTAL' :
+                    plotGraph(750,12,entc_db,'TOTAL')
+                else:
+                    plotGraph(100,20,entc_db,choiceMap[choice])    
     
 
 elif main_choice == 3:
@@ -1065,10 +1073,11 @@ elif main_choice == 3:
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
-            if choiceMap[choice] == 'TOTAL' :
-                plotGraph(750,12,it_db,'TOTAL')
-            else:
-                plotGraph(100,20,it_db,choiceMap[choice])
+            if MATH_PLOT == True:
+                if choiceMap[choice] == 'TOTAL' :
+                    plotGraph(750,12,it_db,'TOTAL')
+                else:
+                    plotGraph(100,20,it_db,choiceMap[choice])
 
 elif main_choice == 4:
     comp_db = []
@@ -1111,10 +1120,11 @@ elif main_choice == 4:
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
-            if choiceMap[choice] == 'TOTAL' :
-                plotGraph(750,12,comp_db,'TOTAL')
-            else:
-                plotGraph(100,20,comp_db,choiceMap[choice])
+            if MATH_PLOT == True:
+                if choiceMap[choice] == 'TOTAL' :
+                    plotGraph(750,12,comp_db,'TOTAL')
+                else:
+                    plotGraph(100,20,comp_db,choiceMap[choice])
 else:
     print "Invalid Option"
 
