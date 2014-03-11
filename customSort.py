@@ -10,19 +10,28 @@ from collections import Counter
 
 CURRENT_DIR = os.path.dirname(__file__)
 
-'''PDF_FILE_ItEntc = "result_itentc.pdf"
-PDF_FILE_COMP = "result_comp.pdf"
-OUT_FILE_ItEntc = "out_it.txt"
-OUT_FILE_COMP = "out_comp.txt"
+PDF_FILE_ItEntc_PICT = "result_itentc_pict.pdf"
+PDF_FILE_COMP_PICT = "result_comp_pict.pdf"
+PDF_FILE_ItEntc_MIT = "result_itentc_mit.pdf"
+PDF_FILE_COMP_MIT = "result_comp_mit.pdf"
+OUT_FILE_ItEntc_MIT = "out_it_MIT.txt"
+OUT_FILE_COMP_MIT = "out_comp_MIT.txt"
+OUT_FILE_ItEntc_PICT = "out_it_PICT.txt"
+OUT_FILE_COMP_PICT = "out_comp_PICT.txt"
 
-os.system(("ps2ascii %s %s") %(PDF_FILE_ItEntc, OUT_FILE_ItEntc))
-os.system(("ps2ascii %s %s") %(PDF_FILE_COMP, OUT_FILE_COMP))
+'''os.system(("ps2ascii %s %s") %(PDF_FILE_ItEntc_PICT, OUT_FILE_ItEntc_PICT))
+os.system(("ps2ascii %s %s") %(PDF_FILE_COMP_PICT, OUT_FILE_COMP_PICT))
+os.system(("ps2ascii %s %s") %(PDF_FILE_ItEntc_MIT, OUT_FILE_ItEntc_MIT))
+os.system(("ps2ascii %s %s") %(PDF_FILE_COMP_MIT, OUT_FILE_COMP_MIT))
 
-filenames = ['out_it.txt', 'out_comp.txt']
-with open(os.path.join(CURRENT_DIR, 'out_combined.txt'), 'w') as outfile:
+filenames = ['out_it_PICT.txt', 'out_comp_PICT.txt', 'out_it_MIT.txt', 'out_comp_MIT.txt']
+with open(os.path.join(CURRENT_DIR, 'out_combined_PICT_MIT.txt'), 'w') as outfile:
     for fname in filenames:
         with open(fname) as inFile:
             outfile.write(inFile.read())'''
+
+
+
 
 #### Function to find user's rank in a given database
 
@@ -89,47 +98,64 @@ def getRank(database, filter_field):
 ####
 
 ### Generalized graph plotting function
-def plotGraph(xRange, yRange, student_db, subField):
+def plotGraph(xRange, yRange, student_db, subField, customLabel):
     xRange += 1
     len_x_axis = xRange
     len_y_axis = yRange
 
     list_x_axis=[]
-    list_y_axis=[]
+    list_y_axis_pict=[]
+    list_y_axis_mit=[]
 
     for i in range(len_x_axis):
         list_x_axis.append(i)
 
-    all_scores_cnt = Counter() # { score: number_of_students_with_that_score }
+    all_scores_cnt_pict = Counter() # { score: number_of_students_with_that_score }
+    all_scores_cnt_mit = Counter() # { score: number_of_students_with_that_score }
 
-    all_totals = []
+    all_totals_pict = []
+    all_totals_mit = []
 
     for student in student_db:
         marks = int(student['Marks'][subField])
-        all_scores_cnt[marks] += 1
+        if student['College'] == 'PICT' :
+            all_scores_cnt_pict[marks] += 1
+        elif student['College'] == 'MIT':
+            all_scores_cnt_mit[marks] += 1
 
     number_of_students_with_that_score = [] # Mapping index to number of students
 
     for i in range(xRange):
-        number_of_students_with_that_score.append(all_scores_cnt[i])
+        number_of_students_with_that_score.append(all_scores_cnt_pict[i])
 
-    list_y_axis = number_of_students_with_that_score
+    list_y_axis_pict = number_of_students_with_that_score
+
+    number_of_students_with_that_score = []
+
+    for i in range(xRange):
+        number_of_students_with_that_score.append(all_scores_cnt_mit[i])
+
+    list_y_axis_mit = number_of_students_with_that_score
     
-    plt.plot(list_x_axis, list_y_axis, 'r')
+    plt.plot(list_x_axis, list_y_axis_pict, 'r', label='PICT')
+    plt.plot(list_x_axis, list_y_axis_mit, 'b', label='MIT')
+    plt.title(customLabel)
     plt.ylabel('No. of students')
     plt.xlabel('Marks')
     plt.axis([0, xRange, 0, yRange])
     plt.grid(True)
+    plt.legend()
     plt.show()
 
     #### END OF MATPLOTLIB Function
 
 
 
-f = open('out_combined.txt','r')
+f = open('out_combined_PICT_MIT.txt','r')
 pdf = f.read()
 
-IT_Roll = 'S120058'
+IT_Roll_PICT = 'S120058'
+IT_Roll_MIT = 'S120028'
 ''' Subject Codes'''
 DS = '214441'
 CO = '214442'
@@ -140,7 +166,8 @@ DELD_ORAL_PRAC = '214446'
 PL = '214447'
 CLL = '214448'
 
-COMP_Roll = 'S120054'
+COMP_Roll_PICT = 'S120054'
+COMP_Roll_MIT = 'S120024'
 ''' Subject Codes'''
 COMP_DS = '210241'
 DSPS = '210242'
@@ -149,7 +176,8 @@ OSA = '210244'
 MPA = '210245'
 SS = '210246'
 
-ENTC_Roll = 'S120053'
+ENTC_Roll_PICT = 'S120053'
+ENTC_Roll_MIT = 'S120023'
 ''' Subject Codes'''
 SS_ENTC = '204181'
 EDC = '204182'
@@ -168,518 +196,525 @@ student_db = []
 
 current_pos = 0
 
-
 # ENTC
-while True :
-    rec_start = pdf.find(ENTC_Roll, current_pos)
-    if rec_start == -1:
-        break
-    # Find end of current record
-    rec_end = pdf.find(RECORD_DELIM, rec_start)
-    # Dictionary to map roll number, name, marks...
-    student = {}
-    student['Branch'] = 'ENTC'
-    # Slice student data from pdf and move current_pos to next student position
-    student_data = pdf[rec_start : rec_end]
- #   print student_data
-    current_pos = rec_end
-    # Get roll
-    roll_num = ""
-    i = 0
-    while student_data[i] != ' ' :
-        roll_num += student_data[i]
-        i += 1
-    student['RollNum'] = roll_num
+def extractEntcData(Entc_Roll_Pattern, College):
+    global student_db
+    global current_pos
+    while True :
+        rec_start = pdf.find(Entc_Roll_Pattern, current_pos)
+        if rec_start == -1:
+            break
+        # Find end of current record
+        rec_end = pdf.find(RECORD_DELIM, rec_start)
+        # Dictionary to map roll number, name, marks...
+        student = {}
+        student['College'] = College
+        student['Branch'] = 'ENTC'
+        # Slice student data from pdf and move current_pos to next student position
+        student_data = pdf[rec_start : rec_end]
+        #   print student_data
+        current_pos = rec_end
+        # Get roll
+        roll_num = ""
+        i = 0
+        while student_data[i] != ' ' :
+            roll_num += student_data[i]
+            i += 1
+        student['RollNum'] = roll_num
 
-    # Get full name
-    # Skip whitespaces
-    while not student_data[i].isalpha() :
-        i += 1
-    name_start = i
-    name_end = student_data.find(NAME_DELIM, name_start)
-    name = student_data[name_start : name_end]
-    student['Name'] = name
-    i = name_end
- #   print name
-    # Get marks 
-    Marks = {}
-    # SS_ENTC
-    subCode_start = student_data.find(SS_ENTC, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['SS_ENTC'] = int(marks)
-  #  print marks
-    #SS_TW
-    subCode_start = student_data.find(SS_ENTC, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "10"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['SS_TW'] = int(marks)
-  #  print marks   
-    #EDC
-    subCode_start = student_data.find(EDC, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['EDC'] = int(marks)
+        # Get full name
+        # Skip whitespaces
+        while not student_data[i].isalpha() :
+            i += 1
+        name_start = i
+        name_end = student_data.find(NAME_DELIM, name_start)
+        name = student_data[name_start : name_end]
+        student['Name'] = name
+        i = name_end
+        #   print name
+        # Get marks 
+        Marks = {}
+        # SS_ENTC
+        subCode_start = student_data.find(SS_ENTC, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['SS_ENTC'] = int(marks)
+        #  print marks
+        #SS_TW
+        subCode_start = student_data.find(SS_ENTC, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "10"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['SS_TW'] = int(marks)
+        #  print marks   
+        #EDC
+        subCode_start = student_data.find(EDC, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['EDC'] = int(marks)
 
-    #EDC_PRAC
-    subCode_start = student_data.find(EDC, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['EDC_PRAC'] = int(marks)
+        #EDC_PRAC
+        subCode_start = student_data.find(EDC, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['EDC_PRAC'] = int(marks)
 
-    #NT
-    subCode_start = student_data.find(NT, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['NT'] = int(marks)
+        #NT
+        subCode_start = student_data.find(NT, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['NT'] = int(marks)
 
-    #NT TW
-    subCode_start = student_data.find(NT, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "10"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['NT_TW'] = int(marks)
+        #NT TW
+        subCode_start = student_data.find(NT, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "10"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['NT_TW'] = int(marks)
 
-    #DSA
-    subCode_start = student_data.find(DSA, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['DSA'] = int(marks)
-    
-    #DSA_OR
-    subCode_start = student_data.find(DSA, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['DSA_ORAL'] = int(marks)
+        #DSA
+        subCode_start = student_data.find(DSA, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['DSA'] = int(marks)
 
-    #DE
-    subCode_start = student_data.find(DE, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['DE'] = int(marks)
+        #DSA_OR
+        subCode_start = student_data.find(DSA, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['DSA_ORAL'] = int(marks)
 
-    #DE Prac
-    subCode_start = student_data.find(DE, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['DE_PRAC'] = int(marks)
-  #  print marks
-    #EMIT
-    subCode_start = student_data.find(EMIT, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
- #   print marks
-    Marks['EMIT'] = int(marks)
-    
-    total = 0
-    for sub in Marks :
-        total += Marks[sub]
-    Marks['TOTAL'] = total
+        #DE
+        subCode_start = student_data.find(DE, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['DE'] = int(marks)
 
-    # Add Marks[] to student[]
-    student['Marks'] = Marks
+        #DE Prac
+        subCode_start = student_data.find(DE, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['DE_PRAC'] = int(marks)
+        #  print marks
+        #EMIT
+        subCode_start = student_data.find(EMIT, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        #   print marks
+        Marks['EMIT'] = int(marks)
 
-    #Add student to db
-    student_db.append(student)
+        total = 0
+        for sub in Marks :
+            total += Marks[sub]
+        Marks['TOTAL'] = total
 
+        # Add Marks[] to student[]
+        student['Marks'] = Marks
 
+        #Add student to db
+        student_db.append(student)
 
 
-while True :
-    rec_start = pdf.find(IT_Roll, current_pos)
-    if rec_start == -1:
-        break
-    # Find end of current record
-    rec_end = pdf.find(RECORD_DELIM, rec_start)
-    # Dictionary to map roll number, name, marks...
-    student = {}
-    student['Branch'] = 'IT'
-    # Slice student data from pdf and move current_pos to next student position
-    student_data = pdf[rec_start : rec_end]
-    current_pos = rec_end
-    # Get roll
-    roll_num = ""
-    i = 0
-    while student_data[i] != ' ' :
-        roll_num += student_data[i]
-        i += 1
-    student['RollNum'] = roll_num
 
-    # Get full name
-    # Skip whitespaces
-    while not student_data[i].isalpha() :
-        i += 1
-    name_start = i
-    name_end = student_data.find(NAME_DELIM, name_start)
-    name = student_data[name_start : name_end]
-    student['Name'] = name
-    i = name_end
+#IT
+def extractItData(IT_Roll_Pattern, College):
+    global student_db
+    global current_pos
+    while True :
+        rec_start = pdf.find(IT_Roll_Pattern, current_pos)
+        if rec_start == -1:
+            break
+        # Find end of current record
+        rec_end = pdf.find(RECORD_DELIM, rec_start)
+        # Dictionary to map roll number, name, marks...
+        student = {}
+        student['College'] = College
+        student['Branch'] = 'IT'
+        # Slice student data from pdf and move current_pos to next student position
+        student_data = pdf[rec_start : rec_end]
+        current_pos = rec_end
+        # Get roll
+        roll_num = ""
+        i = 0
+        while student_data[i] != ' ' :
+            roll_num += student_data[i]
+            i += 1
+        student['RollNum'] = roll_num
 
-    # Get marks 
-    Marks = {}
-    # DS
-    subCode_start = student_data.find(DS, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['DS'] = int(marks)
-   
-    #CO
-    subCode_start = student_data.find(CO, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['CO'] = int(marks)
-        
-    #DELD
-    subCode_start = student_data.find(DELD, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['DELD'] = int(marks)
+        # Get full name
+        # Skip whitespaces
+        while not student_data[i].isalpha() :
+            i += 1
+        name_start = i
+        name_end = student_data.find(NAME_DELIM, name_start)
+        name = student_data[name_start : name_end]
+        student['Name'] = name
+        i = name_end
 
-    #FDS
-    subCode_start = student_data.find(FDS, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['FDS'] = int(marks)
+        # Get marks 
+        Marks = {}
+        # DS
+        subCode_start = student_data.find(DS, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['DS'] = int(marks)
 
-    #PSOOP
-    subCode_start = student_data.find(PSOOP, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['PSOOP'] = int(marks)
+        #CO
+        subCode_start = student_data.find(CO, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['CO'] = int(marks)
 
-    #DELD Prac
-    subCode_start = student_data.find(DELD_ORAL_PRAC, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['DELD_PRAC'] = int(marks)
+        #DELD
+        subCode_start = student_data.find(DELD, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['DELD'] = int(marks)
 
-    #DELD Oral
-    subCode_start = student_data.find(DELD_ORAL_PRAC, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['DELD_ORAL'] = int(marks)
-    
-    #PL TermWork
-    subCode_start = student_data.find(PL, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['PL_TW'] = int(marks)
+        #FDS
+        subCode_start = student_data.find(FDS, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['FDS'] = int(marks)
 
-    #PL Prac
-    subCode_start = student_data.find(PL, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['PL_PRAC'] = int(marks)
+        #PSOOP
+        subCode_start = student_data.find(PSOOP, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['PSOOP'] = int(marks)
 
-    #Communication TW
-    subCode_start = student_data.find(CLL, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['CLL'] = int(marks)
+        #DELD Prac
+        subCode_start = student_data.find(DELD_ORAL_PRAC, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['DELD_PRAC'] = int(marks)
 
-    total = 0
-    for sub in Marks :
-        total += Marks[sub]
-    Marks['TOTAL'] = total
+        #DELD Oral
+        subCode_start = student_data.find(DELD_ORAL_PRAC, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['DELD_ORAL'] = int(marks)
 
-    # Add Marks[] to student[]
-    student['Marks'] = Marks
+        #PL TermWork
+        subCode_start = student_data.find(PL, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['PL_TW'] = int(marks)
 
-    #Add student to db
-    student_db.append(student)
+        #PL Prac
+        subCode_start = student_data.find(PL, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['PL_PRAC'] = int(marks)
+
+        #Communication TW
+        subCode_start = student_data.find(CLL, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['CLL'] = int(marks)
+
+        total = 0
+        for sub in Marks :
+            total += Marks[sub]
+        Marks['TOTAL'] = total
+
+        # Add Marks[] to student[]
+        student['Marks'] = Marks
+
+        #Add student to db
+        student_db.append(student)
 
 
 
@@ -687,288 +722,303 @@ while True :
 
 
 # COMP
-while True :
-    rec_start = pdf.find(COMP_Roll, current_pos)
-    if rec_start == -1:
-        break
-    # Find end of current record
-    rec_end = pdf.find(RECORD_DELIM, rec_start)
-    # Dictionary to map roll number, name, marks...
-    student = {}
-    student['Branch'] = 'COMP'
-    # Slice student data from pdf and move current_pos to next student position
-    student_data = pdf[rec_start : rec_end]
-    current_pos = rec_end
-    # Get roll
-    roll_num = ""
-    i = 0
-    while student_data[i] != ' ' :
-        roll_num += student_data[i]
-        i += 1
-    student['RollNum'] = roll_num
+def extractCompData(COMP_Roll_Pattern, College):
+    global student_db
+    global current_pos
+    while True :
+        rec_start = pdf.find(COMP_Roll_Pattern, current_pos)
+        if rec_start == -1:
+            break
+        # Find end of current record
+        rec_end = pdf.find(RECORD_DELIM, rec_start)
+        # Dictionary to map roll number, name, marks...
+        student = {}
+        student['College'] = College
+        student['Branch'] = 'COMP'
+        # Slice student data from pdf and move current_pos to next student position
+        student_data = pdf[rec_start : rec_end]
+        current_pos = rec_end
+        # Get roll
+        roll_num = ""
+        i = 0
+        while student_data[i] != ' ' :
+            roll_num += student_data[i]
+            i += 1
+        student['RollNum'] = roll_num
 
-    # Get full name
-    # Skip whitespaces
-    while not student_data[i].isalpha() :
-        i += 1
-    name_start = i
-    name_end = student_data.find(NAME_DELIM, name_start)
-    name = student_data[name_start : name_end]
-    student['Name'] = name
-    i = name_end
+        # Get full name
+        # Skip whitespaces
+        while not student_data[i].isalpha() :
+            i += 1
+        name_start = i
+        name_end = student_data.find(NAME_DELIM, name_start)
+        name = student_data[name_start : name_end]
+        student['Name'] = name
+        i = name_end
 
-    # Get marks 
-    Marks = {}
-    # COMP_DS
-    subCode_start = student_data.find(COMP_DS, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['COMP_DS'] = int(marks)
-   
-    # DSPS
-    subCode_start = student_data.find(DSPS, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['DSPS'] = int(marks)
-        
-    #DSPS PR
-    subCode_start = student_data.find(DSPS, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['DSPS_PRAC'] = int(marks)
+        # Get marks 
+        Marks = {}
+        # COMP_DS
+        subCode_start = student_data.find(COMP_DS, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['COMP_DS'] = int(marks)
 
-    #COMP_DELD
-    subCode_start = student_data.find(COMP_DELD, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['COMP_DELD'] = int(marks)
+        # DSPS
+        subCode_start = student_data.find(DSPS, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['DSPS'] = int(marks)
 
-    #DELD_TW
-    subCode_start = student_data.find(COMP_DELD, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "10"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['COMP_DELD_TW'] = int(marks)
+        #DSPS PR
+        subCode_start = student_data.find(DSPS, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['DSPS_PRAC'] = int(marks)
 
-    #OSA
-    subCode_start = student_data.find(OSA, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['OSA'] = int(marks)
+        #COMP_DELD
+        subCode_start = student_data.find(COMP_DELD, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['COMP_DELD'] = int(marks)
 
-    #OSA TW
-    subCode_start = student_data.find(OSA, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "10"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['OSA_TW'] = int(marks)
-    
-    #OSA Prac
-    subCode_start = student_data.find(OSA, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['OSA_PRAC'] = int(marks)
+        #DELD_TW
+        subCode_start = student_data.find(COMP_DELD, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "10"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['COMP_DELD_TW'] = int(marks)
 
-    #MPA
-    subCode_start = student_data.find(MPA, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "40"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['MPA'] = int(marks)
+        #OSA
+        subCode_start = student_data.find(OSA, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['OSA'] = int(marks)
 
-    #MPA TW
-    subCode_start = student_data.find(MPA, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "10"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['MPA_TW'] = int(marks)
+        #OSA TW
+        subCode_start = student_data.find(OSA, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "10"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['OSA_TW'] = int(marks)
 
-    #MPA Oral
-    subCode_start = student_data.find(MPA, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "20"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['MPA_ORAL'] = int(marks)
+        #OSA Prac
+        subCode_start = student_data.find(OSA, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['OSA_PRAC'] = int(marks)
 
-    #SS
-    subCode_start = student_data.find(SS, i)
-    subCode_end = student_data.find(' ', subCode_start)
-    pass_marks = "10"
-    i = student_data.find(pass_marks, subCode_end)
-    #skip pass marks
-    while student_data[i] != ' ':
-        i += 1
-    # now skip spaces and then save actual marks
-    while student_data[i] == ' ':
-        i += 1
-    # Save
-    marks = ""
-    while student_data[i] != ' ':
-        marks += student_data[i]
-        i += 1
-    if marks == 'AA':
-        marks = '0'
-    Marks['SS'] = int(marks)
+        #MPA
+        subCode_start = student_data.find(MPA, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "40"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['MPA'] = int(marks)
 
-    total = 0
-    for sub in Marks :
-        total += Marks[sub]
-    Marks['TOTAL'] = total
+        #MPA TW
+        subCode_start = student_data.find(MPA, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "10"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['MPA_TW'] = int(marks)
 
-    # Add Marks[] to student[]
-    student['Marks'] = Marks
+        #MPA Oral
+        subCode_start = student_data.find(MPA, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "20"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['MPA_ORAL'] = int(marks)
 
-    #Add student to db
-    student_db.append(student)
+        #SS
+        subCode_start = student_data.find(SS, i)
+        subCode_end = student_data.find(' ', subCode_start)
+        pass_marks = "10"
+        i = student_data.find(pass_marks, subCode_end)
+        #skip pass marks
+        while student_data[i] != ' ':
+            i += 1
+        # now skip spaces and then save actual marks
+        while student_data[i] == ' ':
+            i += 1
+        # Save
+        marks = ""
+        while student_data[i] != ' ':
+            marks += student_data[i]
+            i += 1
+        if marks == 'AA':
+            marks = '0'
+        Marks['SS'] = int(marks)
+
+        total = 0
+        for sub in Marks :
+            total += Marks[sub]
+        Marks['TOTAL'] = total
+
+        # Add Marks[] to student[]
+        student['Marks'] = Marks
+
+        #Add student to db
+        student_db.append(student)
+
+
+
+# Process Data
+extractEntcData(ENTC_Roll_PICT, 'PICT')
+extractItData(IT_Roll_PICT, 'PICT')
+extractCompData(COMP_Roll_PICT, 'PICT')
+extractEntcData(ENTC_Roll_MIT, 'MIT')
+extractItData(IT_Roll_MIT, 'MIT')
+extractCompData(COMP_Roll_MIT, 'MIT')
+
 
 
 main_choice = int(raw_input("\nChoose filtering criteria:\n1. Overall Ranks(All Branches)\n2. ENTC\n3. IT\n4. COMP\n"))
@@ -987,10 +1037,10 @@ if main_choice == 1:
         for i in sorted_list :
             for sub in i['Marks'] :
                 print("       %12s : %s " %(sub, i['Marks'][sub]))
-            print(" %s %25s         Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['Branch'], total_students-rank))
+            print(" %s %25s   %4s    Branch: %4s  Rank : %d" %(i['RollNum'], i['Name'], i['College'], i['Branch'], total_students-rank))
             rank += 1
         if(MATH_PLOT == True):
-            plotGraph(750, 12, student_db, 'TOTAL')
+            plotGraph(750, 11, student_db, 'TOTAL', 'UoP Sem 3[Comp + IT + Entc]')
 
 
 elif main_choice == 2:
@@ -1030,15 +1080,15 @@ elif main_choice == 2:
             total_students = len(entc_db)
             rank = 0
             for i in sorted_list :
-                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], total_students-rank))
+                print(" %s %35s  %4s   Rank : %d" %(i['RollNum'], i['Name'], i['College'], total_students-rank))
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
             if MATH_PLOT == True:
                 if choiceMap[choice] == 'TOTAL' :
-                    plotGraph(750,12,entc_db,'TOTAL')
+                    plotGraph(750,5,entc_db,'TOTAL', 'UoP Sem 3 [Entc]')
                 else:
-                    plotGraph(100,20,entc_db,choiceMap[choice])    
+                    plotGraph(100,20,entc_db,choiceMap[choice], 'UoP Sem 3 [Entc]')    
     
 
 elif main_choice == 3:
@@ -1077,15 +1127,15 @@ elif main_choice == 3:
             total_students = len(it_db)
             rank = 0
             for i in sorted_list :
-                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], total_students-rank))
+                print(" %s %35s  %4s   Rank : %d" %(i['RollNum'], i['Name'], i['College'], total_students-rank))
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
             if MATH_PLOT == True:
                 if choiceMap[choice] == 'TOTAL' :
-                    plotGraph(750,12,it_db,'TOTAL')
+                    plotGraph(750,5,it_db,'TOTAL','UoP Sem 3 [IT]')
                 else:
-                    plotGraph(100,20,it_db,choiceMap[choice])
+                    plotGraph(100,20,it_db,choiceMap[choice],'UoP Sem 3 [IT]')
 
 elif main_choice == 4:
     comp_db = []
@@ -1124,15 +1174,15 @@ elif main_choice == 4:
             total_students = len(comp_db)
             rank = 0
             for i in sorted_list :
-                print(" %s %35s     Rank : %d" %(i['RollNum'], i['Name'], total_students-rank))
+                print(" %s %35s  %4s   Rank : %d" %(i['RollNum'], i['Name'], i['College'], total_students-rank))
                 rank += 1
                 for sub in i['Marks'] :
                     print("       %12s : %s " %(sub, i['Marks'][sub]))
             if MATH_PLOT == True:
                 if choiceMap[choice] == 'TOTAL' :
-                    plotGraph(750,12,comp_db,'TOTAL')
+                    plotGraph(750,6,comp_db,'TOTAL','UoP Sem 3 [Comp]')
                 else:
-                    plotGraph(100,20,comp_db,choiceMap[choice])
+                    plotGraph(100,20,comp_db,choiceMap[choice],'UoP Sem 3 [Comp]')
     
 else:
     print "Invalid Option"
